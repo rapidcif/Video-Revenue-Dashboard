@@ -1,0 +1,7 @@
+create table youmaker_video_stats_march_adjustment as
+select insights_date, embed_domain, country, sum(total_ad_impression) as total_ad_impression, avg(impression) as impressions,
+((sum(total_ad_impression) - avg(impression))/avg(impression)) as adjustment
+from Lab.youmaker_video_stats_march2
+where impression <> 0
+group by insights_date, embed_domain, country
+order by insights_date, embed_domain, country;

@@ -1,0 +1,86 @@
+create table youmaker_video_stats_march as
+select video_id, video_title, vendor_name, duration, embed_domain, placement, insights_date, country,	
+sum(Player_Loaded) as Player_Loaded,	
+sum(Video_Play) as Video_Play,	
+sum(Video_Complete) as Video_Complete,	
+sum(Video_view_10_Seconds) as Video_View_10_Seconds,	
+sum(Video_View_30_Seconds) as Video_View_30_Seconds,	
+sum(Video_View_60_seconds) as Video_View_60_Seconds,	
+sum(Video_View_180_Seconds) as Video_View_180_Seconds,	
+sum(Video_completion_rate_25_Percent) as Video_Completion_Rate_25_Percent,	
+sum(Video_completion_rate_50_Percent) as Video_Copmletion_Rate_50_Percent,	
+sum(Video_completion_rate_75_Percent) as Video_Completion_Rate_75_Percent,	
+sum(Ad_Request) as Ad_Request,	
+sum(Ad_Complete) as Ad_Complete,	
+sum(Ad_Impression) as Ad_Impression,	
+sum(Ad_Skip) as Ad_Skip	
+from	
+(SELECT	
+video_id,	
+video_title,	
+vendor_name,	
+duration,	
+embed_domain,	
+placement,
+DATE(timestamp_sub(timestamp, Interval 7 HOUR)) AS insights_date,	
+country,	
+CASE	
+WHEN event_name = 'Player Loaded' THEN COUNT(*)	
+END AS Player_Loaded,	
+CASE	
+WHEN event_name = 'Video Play' THEN COUNT(*)	
+END AS Video_Play,	
+CASE	
+WHEN event_name = 'Video Complete' THEN COUNT(*)	
+END AS Video_Complete,	
+CASE	
+WHEN event_name = 'Video View 10 seconds' THEN COUNT(*)	
+END AS Video_view_10_Seconds,	
+CASE	
+WHEN event_name = 'Video View 30 seconds' THEN COUNT(*)	
+END AS Video_View_30_Seconds,	
+CASE	
+WHEN event_name = 'Video View 60 seconds' THEN COUNT(*)	
+END AS Video_View_60_seconds,	
+CASE	
+WHEN event_name = 'Video View 180 seconds' THEN COUNT(*)	
+END AS Video_View_180_Seconds,	
+CASE	
+WHEN event_name = 'Video completion rate 25%' THEN COUNT(*)
+END AS Video_completion_rate_25_Percent,
+CASE	
+WHEN event_name = 'Video completion rate 50%' THEN COUNT(*)
+END AS Video_completion_rate_50_Percent,
+CASE	
+WHEN event_name = 'Video completion rate 75%' THEN COUNT(*)
+END AS Video_completion_rate_75_Percent,
+CASE	
+WHEN event_name = 'Ad Request' THEN COUNT(*)	
+END AS Ad_Request,	
+CASE	
+WHEN event_name = 'Ad Complete' THEN COUNT(*)	
+END AS Ad_Complete,	
+CASE	
+WHEN event_name = 'Ad Impression' THEN COUNT(*)	
+END AS Ad_Impression,	
+CASE	
+WHEN event_name = 'Ad Skip' THEN COUNT(*)	
+END AS Ad_Skip	
+FROM	
+Operations.youmaker_events
+where
+DATE(timestamp_sub(timestamp, Interval 7 HOUR)) >= '2018-03-01'
+and
+DATE(timestamp_sub(timestamp, Interval 7 HOUR)) <= '2018-03-31'
+GROUP BY	
+video_id,	
+video_title,	
+vendor_name,	
+duration,	
+embed_domain,	
+insights_date,	
+country,
+placement,
+event_name)	
+group by video_id, video_title, vendor_name,	
+duration, embed_domain, placement, insights_date, country;

@@ -1,0 +1,25 @@
+create table youmaker_video_stats_march2
+select y.video_id, y.video_title, y.vendor_name, y.duration, y.embed_domain, y.insights_date, y.country as country_youmaker, sum(y.ad_impression) as total_ad_impression, 
+j.day, j.country, j.website, j.revenue, j.request, j.impression, j.cpm, y.ad_impression/1000*j.cpm as video_revenue
+from Lab.youmaker_video_stats_march y
+inner join
+(SELECT
+day,
+country,
+website,
+SUM(fb_ad_network_revenue) AS revenue,
+sum(fb_ad_network_request) as request,
+sum(fb_ad_network_imp) as impression,
+sum(fb_ad_network_cpm) as cpm
+FROM
+Lab.fb_video_revenue_denormalized 
+GROUP BY
+day,
+country,
+website) j
+on y.insights_date = j.day
+and y.country = j.country
+and y.embed_domain = j.website
+group by y.video_id, y.video_title, y.vendor_name, y.duration, y.insights_date, y.country, y.embed_domain, j.day, j.country, j.website, j.revenue,
+j.request, j.impression, j.cpm, video_revenue
+order by embed_domain;

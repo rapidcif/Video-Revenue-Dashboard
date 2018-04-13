@@ -1,0 +1,6 @@
+create table youmaker_video_stats_march3
+select y.*, a.adjustment from `Lab.youmaker_video_stats_march2` y
+left join Lab.youmaker_video_stats_march_adjustment a
+on y.insights_date = a.insights_date
+and y.embed_domain = a.embed_domain
+and y.country = a.country;
